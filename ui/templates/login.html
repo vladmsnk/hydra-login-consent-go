@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - OAuth2 Authentication</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-card">
+            <div class="header">
+                <h1>Sign In</h1>
+                <p class="subtitle">Authenticate to continue</p>
+            </div>
+            
+            <div class="client-info">
+                <p><strong>Application:</strong> {{.ClientName}}</p>
+                <p><strong>Requested Scopes:</strong> {{range $index, $scope := .RequestedScope}}{{if $index}}, {{end}}{{$scope}}{{end}}</p>
+            </div>
+
+            {{if .Success}}
+            <div class="success-message">
+                <p>{{.Success}}</p>
+                {{if .Username}}<p><strong>Logged in as:</strong> {{.Username}}</p>{{end}}
+                {{if .Remember}}<p><em>Session will be remembered</em></p>{{end}}
+            </div>
+            {{else}}
+                {{if .Error}}
+                <div class="error-message">
+                    <p>{{.Error}}</p>
+                </div>
+                {{end}}
+
+                <form method="POST" action="{{.LoginURL}}" class="login-form">
+                    <input type="hidden" name="login_challenge" value="{{.Challenge}}">
+                    
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required placeholder="Enter your username">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required placeholder="Enter your password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="remember" value="true">
+                            <span class="checkmark"></span>
+                            Remember me
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="login-btn">Sign In</button>
+                </form>
+            {{end}}
+        </div>
+    </div>
+</body>
+</html> 

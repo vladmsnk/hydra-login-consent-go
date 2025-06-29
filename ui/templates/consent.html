@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consent - OAuth2 Authorization</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-card">
+            <div class="header">
+                <h1>Grant Permissions</h1>
+                <p class="subtitle">{{.ClientName}} is requesting access</p>
+            </div>
+            
+            <div class="client-info">
+                <p><strong>Application:</strong> {{.ClientName}}</p>
+                <p><strong>User:</strong> {{.Subject}}</p>
+            </div>
+
+            {{if .Error}}
+            <div class="error-message">
+                <p>{{.Error}}</p>
+            </div>
+            {{end}}
+
+            <div class="consent-section">
+                <h3>This application wants to:</h3>
+                
+                <form method="POST" action="{{.ConsentURL}}" class="consent-form">
+                    <input type="hidden" name="consent_challenge" value="{{.Challenge}}">
+                    
+                    <div class="scopes-list">
+                        {{range .RequestedScope}}
+                        <div class="scope-item">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="granted_scope" value="{{.}}" checked>
+                                <span class="checkmark"></span>
+                                <div class="scope-info">
+                                    <span class="scope-name">{{.}}</span>
+                                    <span class="scope-description">{{index $.ScopeDescriptions .}}</span>
+                                </div>
+                            </label>
+                        </div>
+                        {{end}}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="remember" value="true">
+                            <span class="checkmark"></span>
+                            Remember my choice
+                        </label>
+                    </div>
+                    
+                    <div class="consent-actions">
+                        <button type="submit" name="action" value="allow" class="login-btn allow-btn">Allow</button>
+                        <button type="submit" name="action" value="deny" class="login-btn deny-btn">Deny</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
