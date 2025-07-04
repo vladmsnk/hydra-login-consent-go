@@ -1,0 +1,13 @@
+[Unit]
+Description=Hydra Login Consent Service
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/hydra-login-consent
+EnvironmentFile=/etc/hydra-login-consent.env
+ExecStart=/opt/hydra-login-consent/login_consent
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
