@@ -10,6 +10,10 @@ import (
 func (t *Transport) ConsentHandler(c *gin.Context) {
 	consentChallenge := c.Query("consent_challenge")
 	if consentChallenge == "" {
+		consentChallenge = c.PostForm("consent_challenge")
+	}
+
+	if consentChallenge == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "missing consent_challenge parameter"})
 		return
 	}
