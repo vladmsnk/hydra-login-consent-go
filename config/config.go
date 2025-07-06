@@ -59,7 +59,7 @@ func GetDefaultConfig() *Config {
 		HydraUsername:   "adminuser",
 		HydraPassword:   "1234",
 		Port:            3000,
-		Host:            "localhost",
+		Host:            "127.0.0.1",
 		LoginURL:        "/login",
 		ConsentURL:      "/consent",
 		ReadTimeout:     15 * time.Second,
