@@ -26,12 +26,25 @@ sudo install -m 644 hydra-login-consent.service "$SERVICE_FILE"
 # Create environment file if missing
 if [ ! -f "$ENV_FILE" ]; then
     sudo tee "$ENV_FILE" >/dev/null <<EOT
+# Hydra configuration
 HYDRA_ADMIN_URL=https://oauthidm.ru
 HYDRA_USERNAME=adminuser
 HYDRA_PASSWORD=1234
+
+# Server configuration
 HOST=127.0.0.1
 PORT=3000
+
+# LDAP configuration
+LDAP_SERVER=ldap://localhost:389
+LDAP_BASE_DN=dc=example,dc=com
+LDAP_BIND_DN=cn=admin,dc=example,dc=com
+LDAP_BIND_PASSWORD=your-ldap-admin-password
+LDAP_USER_SEARCH_FILTER=(uid=%s)
+LDAP_USE_TLS=false
+LDAP_TIMEOUT=10s
 EOT
+    echo "Created $ENV_FILE - please edit it with your actual values!"
 fi
 
 sudo systemctl daemon-reload

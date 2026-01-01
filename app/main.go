@@ -19,8 +19,24 @@ func main() {
 	hydraAdminClient := newHydraAdminClient(c)
 	hydraAdapter := hydra_adapter.NewHydraAdapter(hydraAdminClient)
 
-	// Create identity provider and add test users
-	identityProvider := idp.NewInMemoryIdentityProvider()
+	// Create LDAP identity provider
+	identityProvider := idp.NewLDAPProvider(idp.LDAPConfig{
+		Server:             c.LDAPServer,
+		BaseDN:             c.LDAPBaseDN,
+		BindDN:             c.LDAPBindDN,
+		BindPassword:       c.LDAPBindPassword,
+		UserSearchFilter:   c.LDAPUserSearchFilter,
+		UserSearchAttr:     c.LDAPUserSearchAttr,
+		UseTLS:             c.LDAPUseTLS,
+		InsecureSkipVerify: c.LDAPInsecureSkipTLS,
+		ConnectionTimeout:  c.LDAPTimeout,
+	})
+
+	log.Printf("Testing LDAP connection to %s...", c.LDAPServer)
+	if err := identityProvider.Ping(); err != nil {
+		log.Fatalf("LDAP connection failed: %v", err)
+	}
+	log.Println("LDAP connection successful")
 
 	transport := handlers.NewTransport(hydraAdapter, identityProvider)
 

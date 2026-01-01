@@ -22,6 +22,17 @@ type Config struct {
 	IdleTimeout  time.Duration `json:"idle_timeout" yaml:"idle_timeout" env:"IDLE_TIMEOUT"`
 
 	ShutdownTimeout time.Duration `json:"shutdown_timeout" yaml:"shutdown_timeout" env:"SHUTDOWN_TIMEOUT"`
+
+	// LDAP configuration
+	LDAPServer           string        `json:"ldap_server" yaml:"ldap_server" env:"LDAP_SERVER"`
+	LDAPBaseDN           string        `json:"ldap_base_dn" yaml:"ldap_base_dn" env:"LDAP_BASE_DN"`
+	LDAPBindDN           string        `json:"ldap_bind_dn" yaml:"ldap_bind_dn" env:"LDAP_BIND_DN"`
+	LDAPBindPassword     string        `json:"ldap_bind_password" yaml:"ldap_bind_password" env:"LDAP_BIND_PASSWORD"`
+	LDAPUserSearchFilter string        `json:"ldap_user_search_filter" yaml:"ldap_user_search_filter" env:"LDAP_USER_SEARCH_FILTER"`
+	LDAPUserSearchAttr   string        `json:"ldap_user_search_attr" yaml:"ldap_user_search_attr" env:"LDAP_USER_SEARCH_ATTR"`
+	LDAPUseTLS           bool          `json:"ldap_use_tls" yaml:"ldap_use_tls" env:"LDAP_USE_TLS"`
+	LDAPInsecureSkipTLS  bool          `json:"ldap_insecure_skip_tls" yaml:"ldap_insecure_skip_tls" env:"LDAP_INSECURE_SKIP_TLS"`
+	LDAPTimeout          time.Duration `json:"ldap_timeout" yaml:"ldap_timeout" env:"LDAP_TIMEOUT"`
 }
 
 func NewConfig() *Config {
@@ -38,6 +49,17 @@ func NewConfig() *Config {
 		WriteTimeout:    getEnvDurationOrDefault("WRITE_TIMEOUT", defaults.WriteTimeout),
 		IdleTimeout:     getEnvDurationOrDefault("IDLE_TIMEOUT", defaults.IdleTimeout),
 		ShutdownTimeout: getEnvDurationOrDefault("SHUTDOWN_TIMEOUT", defaults.ShutdownTimeout),
+
+		// LDAP configuration
+		LDAPServer:           getEnvOrDefault("LDAP_SERVER", defaults.LDAPServer),
+		LDAPBaseDN:           getEnvOrDefault("LDAP_BASE_DN", defaults.LDAPBaseDN),
+		LDAPBindDN:           getEnvOrDefault("LDAP_BIND_DN", defaults.LDAPBindDN),
+		LDAPBindPassword:     getEnvOrDefault("LDAP_BIND_PASSWORD", defaults.LDAPBindPassword),
+		LDAPUserSearchFilter: getEnvOrDefault("LDAP_USER_SEARCH_FILTER", defaults.LDAPUserSearchFilter),
+		LDAPUserSearchAttr:   getEnvOrDefault("LDAP_USER_SEARCH_ATTR", defaults.LDAPUserSearchAttr),
+		LDAPUseTLS:           getEnvBoolOrDefault("LDAP_USE_TLS", defaults.LDAPUseTLS),
+		LDAPInsecureSkipTLS:  getEnvBoolOrDefault("LDAP_INSECURE_SKIP_TLS", defaults.LDAPInsecureSkipTLS),
+		LDAPTimeout:          getEnvDurationOrDefault("LDAP_TIMEOUT", defaults.LDAPTimeout),
 	}
 
 	if portStr := os.Getenv("PORT"); portStr != "" {
@@ -66,6 +88,17 @@ func GetDefaultConfig() *Config {
 		WriteTimeout:    15 * time.Second,
 		IdleTimeout:     60 * time.Second,
 		ShutdownTimeout: 30 * time.Second,
+
+		// LDAP defaults
+		LDAPServer:           "ldap://localhost:389",
+		LDAPBaseDN:           "dc=example,dc=com",
+		LDAPBindDN:           "",
+		LDAPBindPassword:     "",
+		LDAPUserSearchFilter: "(uid=%s)",
+		LDAPUserSearchAttr:   "uid",
+		LDAPUseTLS:           false,
+		LDAPInsecureSkipTLS:  false,
+		LDAPTimeout:          10 * time.Second,
 	}
 }
 
@@ -80,6 +113,15 @@ func getEnvDurationOrDefault(key string, defaultValue time.Duration) time.Durati
 	if value := os.Getenv(key); value != "" {
 		if duration, err := time.ParseDuration(value); err == nil {
 			return duration
+		}
+	}
+	return defaultValue
+}
+
+func getEnvBoolOrDefault(key string, defaultValue bool) bool {
+	if value := os.Getenv(key); value != "" {
+		if parsed, err := strconv.ParseBool(value); err == nil {
+			return parsed
 		}
 	}
 	return defaultValue
